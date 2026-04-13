@@ -9,7 +9,17 @@ RSS_FEEDS = {
     "worldnews": "https://www.reddit.com/r/worldnews/new/.rss",
     "technology": "https://www.reddit.com/r/technology/new/.rss",
     "MachineLearning": "https://www.reddit.com/r/MachineLearning/new/.rss",
-    "artificial": "https://www.reddit.com/r/artificial/new/.rss"
+    "artificial": "https://www.reddit.com/r/artificial/new/.rss",
+    "programming": "https://www.reddit.com/r/programming/.rss",
+    "datascience": "https://www.reddit.com/r/datascience/.rss",
+    "business": "https://www.reddit.com/r/business/.rss",
+    "stocks": "https://www.reddit.com/r/stocks/.rss",
+    "economics": "https://www.reddit.com/r/economics/.rss",
+    "startups": "https://www.reddit.com/r/startups/.rss",
+    "science": "https://www.reddit.com/r/science/.rss",
+    "futurology": "https://www.reddit.com/r/Futurology/.rss",
+    "privacy": "https://www.reddit.com/r/privacy/.rss",
+    "cybersecurity": "https://www.reddit.com/r/cybersecurity/.rss"
 }
 
 HEADERS = {
@@ -47,16 +57,16 @@ def fetch_reddit_rss():
 
 
 def save_to_db(df):
-    conn = sqlite3.connect("reddit_rss_data.db")
+    conn = sqlite3.connect("/home/ubuntu/news-sentiment-pipeline/reddit_pipeline.db")
 
     try:
-        old_df = pd.read_sql("SELECT * FROM reddit_posts", conn)
+        old_df = pd.read_sql("SELECT * FROM reddit_raw_data", conn)
         combined = pd.concat([old_df, df], ignore_index=True)
     except:
         combined = df.copy()
 
-    combined = combined.drop_duplicates(subset=["link"])
-    combined.to_sql("reddit_posts", conn, if_exists="replace", index=False)
+    
+    df.to_sql("reddit_raw_data", conn, if_exists="append", index=False)
 
     conn.close()
 
