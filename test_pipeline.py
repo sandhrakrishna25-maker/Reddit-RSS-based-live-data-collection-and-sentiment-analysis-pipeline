@@ -53,6 +53,29 @@ class TestTransformations(unittest.TestCase):
         df["sentiment_score"] = pd.to_numeric(df["sentiment_score"], errors="coerce")
         self.assertEqual(str(df["sentiment_score"].dtype), "float64")
 
+    def test_invalid_sentiment_values(self):
+        df = pd.DataFrame({
+            "sentiment_score": ["abc", None]
+        })
+
+        df["sentiment_score"] = pd.to_numeric(df["sentiment_score"], errors="coerce")
+        self.assertTrue(df["sentiment_score"].isna().all())
+
+    def test_empty_database(self):
+        empty_db = "empty.db"
+        conn = sqlite3.connect(empty_db)
+
+        pd.DataFrame(columns=["sentiment_score"]).to_sql(
+            "reddit_pipeline_Sentmnt_Table", conn, if_exists="replace", index=False
+        )
+        conn.close()
+
+        df = load_data_for_test(empty_db)
+        self.assertTrue(df.empty)
+
+        if os.path.exists(empty_db):
+            os.remove(empty_db)
+
 
 if __name__ == "__main__":
     unittest.main()
